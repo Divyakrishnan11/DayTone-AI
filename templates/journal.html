@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Daily Check-in — DayTone AI{% endblock %}
+{% block content %}
+<div class="checkin-wrap">
+    <div class="checkin-intro">
+        <div class="eyebrow">DAILY CHECK-IN</div>
+        <h1>How are you feeling<br><span>today?</span></h1>
+        <p>There is no right or wrong answer. Choose the feeling that is closest to how you feel right now.</p>
+    </div>
+
+    <form method="POST" class="checkin-form" id="checkinForm">
+        <div class="mood-grid">
+            {% for mood in moods %}
+            <label class="mood-option">
+                <input type="radio" name="mood_score" value="{{ mood.score }}" required>
+                <span class="mood-box">
+                    <strong>{{ mood.emoji }}</strong>
+                    <span>{{ mood.name }}</span>
+                </span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="journal-box">
+            <div class="journal-title">
+                <div><div class="eyebrow">YOUR JOURNAL</div><h2>What's on your mind?</h2></div>
+                <span>Private reflection</span>
+            </div>
+            <textarea name="journal" id="journal" minlength="10" placeholder="Tell us about your day. What happened? How did it make you feel? What has been on your mind lately?" required></textarea>
+            <div class="textarea-footer"><span id="count">0 characters</span><span>Write freely — there is no perfect answer.</span></div>
+        </div>
+
+        <div class="privacy-note">🔒 Your entry is linked only to your account and is used to generate your wellness reflection.</div>
+        <button class="btn primary large" type="submit" id="submitBtn">Analyze my day <span>→</span></button>
+    </form>
+</div>
+<script>
+const journal = document.getElementById('journal');
+const count = document.getElementById('count');
+const form = document.getElementById('checkinForm');
+const btn = document.getElementById('submitBtn');
+journal.addEventListener('input', () => count.textContent = journal.value.length + ' characters');
+form.addEventListener('submit', () => {
+    btn.disabled = true;
+    btn.innerHTML = 'Analyzing your day…';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="calendar-page">
+
+    <div class="calendar-header">
+        <div>
+            <h1>📅 Mood Calendar</h1>
+            <p>Track how you have been feeling each day.</p>
+        </div>
+
+        <div class="calendar-navigation">
+        <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}"
+            class="calendar-btn">
+                ←
+            </a>
+
+            <h2>{{ month_name }} {{ year }}</h2>
+
+            <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}"
+               class="calendar-btn">
+                →
+            </a>
+        </div>
+    </div>
+
+
+    <div class="calendar-card">
+
+        <div class="weekdays">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+
+
+        <div class="calendar-grid">
+
+            {% for week in calendar_weeks %}
+
+                {% for day in week %}
+
+                    {% if day == 0 %}
+
+                        <div class="calendar-day empty"></div>
+
+                    {% else %}
+
+                        {% set entry = mood_entries.get(day) %}
+
+                        <div class="calendar-day
+                            {% if entry %}
+                                has-mood
+                            {% endif %}
+                        ">
+
+                            <div class="day-number">
+                                {{ day }}
+                            </div>
+
+                            {% if entry %}
+
+                                <div class="mood-emoji">
+                                    {{ entry.mood_emoji }}
+                                </div>
+
+                                <div class="mood-name">
+                                    {{ entry.mood_name }}
+                                </div>
+
+                                <div class="mood-score">
+                                    Score: {{ entry.mood_score }}/7
+                                </div>
+                                {% if entry.stress_level %}
+                                    <div class="stress-small">
+                                        Stress {{ entry.stress_level }}/10
+                                    </div>
+                                {% endif %}
+
+                            {% else %}
+
+                                <div class="no-entry">
+                                    —
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

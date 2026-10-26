@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Analytics — DayTone AI{% endblock %}
+{% block head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="dashboard-head">
+        <div>
+            <div class="eyebrow">YOUR HISTORY</div>
+            <h1>Mood analytics</h1>
+            <p class="muted">Notice patterns without judging yourself.</p>
+        </div>
+        <a href="{{ url_for('journal') }}" class="btn primary">+ New check-in</a>
+    </section>
+
+    {% if rows %}
+    <section class="analytics-cards">
+        <div class="stat-card"><div class="card-label">ENTRIES</div><div class="big-number">{{ rows|length }}</div><p>Recent reflections</p></div>
+        <div class="stat-card"><div class="card-label">AVERAGE MOOD</div><div class="big-number">{{ "%.1f"|format(rows|map(attribute='mood_score')|sum / rows|length) }}<span>/7</span></div><p>Across your entries</p></div>
+        <div class="stat-card"><div class="card-label">AVERAGE STRESS</div><div class="big-number">{{ "%.1f"|format(rows|map(attribute='stress_level')|select('number')|sum / (rows|selectattr('stress_level')|list|length if rows|selectattr('stress_level')|list|length else 1)) }}<span>/10</span></div><p>AI-estimated</p></div>
+    </section>
+    <div class="chart-card tall"><canvas id="analyticsChart"></canvas></div>
+
+    <div class="table-card">
+        <div class="section-heading"><div><div class="eyebrow">RECENT CHECK-INS</div><h2>Your entries</h2></div></div>
+        <div class="history-list">
+        {% for row in rows|reverse %}
+            <div class="history-row">
+                <span>{{ row.created_at.strftime('%b %d, %Y') if row.created_at else '' }}</span>
+                <strong>{{ row.mood_name }}</strong>
+                <span>Mood {{ row.mood_score }}/7</span>
+                <span>Stress {{ row.stress_level or '—' }}/10</span>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-emoji">📊</div><h2>No history yet.</h2><p>Complete a daily check-in to start building your mood history.</p><a href="{{ url_for('journal') }}" class="btn primary">Start a check-in</a></div>
+    {% endif %}
+</div>
+{% if rows %}
+<script>
+const rows = {{ rows|tojson }};
+new Chart(document.getElementById('analyticsChart'), {
+    type: 'line',
+    data: {
+        labels: rows.map(x => new Date(x.created_at).toLocaleDateString([], {month:'short', day:'numeric'})),
+        datasets: [
+            {label:'Mood / 7', data:rows.map(x=>x.mood_score), tension:.35, borderWidth:3, pointRadius:3},
+            {label:'Stress / 10', data:rows.map(x=>x.stress_level), tension:.35, borderWidth:3, pointRadius:3}
+        ]
+    },
+    options: {responsive:true, maintainAspectRatio:false, scales:{y:{min:0,max:10,ticks:{stepSize:2}}}, plugins:{legend:{position:'bottom'}}}
+});
+</script>
+{% endif %}
+{% endblock %}

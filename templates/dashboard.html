@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — DayTone AI{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="dashboard-head">
+        <div>
+            <div class="eyebrow">YOUR WELLNESS SPACE</div>
+            <h1>Hello, {{ user.name.split()[0] }} <span>👋</span></h1>
+            <p class="muted">How are you feeling today?</p>
+        </div>
+        <a class="btn primary" href="{{ url_for('journal') }}">Start today's check-in →</a>
+    </section>
+
+    {% if latest %}
+    <section class="summary-grid">
+        <div class="stat-card mood-card">
+            <div class="card-label">LATEST MOOD</div>
+            <div class="big-mood">{{ moods[latest.mood_score-1].emoji }}</div>
+            <h3>{{ latest.mood_name }}</h3>
+            <p>Score {{ latest.mood_score }}/7</p>
+        </div>
+        <div class="stat-card">
+            <div class="card-label">ESTIMATED STRESS</div>
+            <div class="big-number">{{ latest.stress_level or '—' }}<span>/10</span></div>
+            <div class="stress-line"><span style="width: {{ (latest.stress_level or 0) * 10 }}%"></span></div>
+            <p>Based on your latest reflection</p>
+        </div>
+        <div class="stat-card insight-card">
+            <div class="card-label">LATEST INSIGHT</div>
+            <p>{{ latest.summary or "Complete your first check-in to see your insight." }}</p>
+            <a href="{{ url_for('analysis', analysis_id=session.get('latest_analysis_id')) if session.get('latest_analysis_id') else url_for('journal') }}">View analysis →</a>
+        </div>
+    </section>
+    {% else %}
+    <section class="empty-state">
+        <div class="empty-emoji">🌱</div>
+        <h2>Your first check-in starts here.</h2>
+        <p>Choose your mood, write a little about your day, and DayTone will help you reflect.</p>
+        <a href="{{ url_for('journal') }}" class="btn primary">Start my first check-in</a>
+    </section>
+    {% endif %}
+
+
+<section class="streak-section">
+    <div class="stat-card streak-card">
+        <div class="card-label">WELLNESS STREAK</div>
+
+        <div class="streak-number">
+            🔥 {{ current_streak }}
+            <span>days</span>
+        </div>
+
+        <p>Current check-in streak</p>
+
+        <div class="streak-best">
+            🏆 Longest streak: <strong>{{ longest_streak }} days</strong>
+        </div>
+    </div>
+</section>
+
+
+    <section class="dashboard-section">
+        <div class="section-heading">
+            <div><div class="eyebrow">LAST 30 ENTRIES</div><h2>Your mood journey</h2></div>
+            <a href="{{ url_for('analytics') }}">View full analytics →</a>
+        </div>
+        <div class="chart-card">
+            <canvas id="moodChart"></canvas>
+        </div>
+    </section>
+</div>
+
+<script>
+const history = {{ history|tojson }};
+const labels = history.map(x => new Date(x.created_at).toLocaleDateString([], {month:'short', day:'numeric'}));
+const mood = history.map(x => x.mood_score);
+const stress = history.map(x => x.stress_level);
+new Chart(document.getElementById('moodChart'), {
+    type: 'line',
+    data: {
+        labels,
+        datasets: [
+            {label: 'Mood', data: mood, tension: .4, borderWidth: 3, pointRadius: 3},
+            {label: 'Stress', data: stress, tension: .4, borderWidth: 3, pointRadius: 3}
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { min: 0, max: 10, ticks: { stepSize: 2 } } },
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+</script>
+{% endblock %}

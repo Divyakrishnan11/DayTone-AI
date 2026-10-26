@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Your DayTone Analysis{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <div class="analysis-header">
+        <div class="eyebrow">YOUR DAYTONE REFLECTION</div>
+        <h1>Here's what your day<br><span>may be telling you.</span></h1>
+        <div class="selected-mood">{{ result.mood_name }} mood {{ ["","😢","😔","😐","🙂","😊","😄","🤩"][result.mood_score] }}</div>
+    </div>
+
+    <section class="analysis-grid">
+        <div class="stress-card">
+            <div class="card-label">ESTIMATED STRESS</div>
+            <div class="stress-number">{{ result.stress_level }}<small>/10</small></div>
+            <div class="stress-meter"><span style="width: {{ result.stress_level * 10 }}%"></span></div>
+            <p>This is an AI-assisted reflection, not a medical assessment.</p>
+        </div>
+        <div class="analysis-card">
+            <div class="card-label">EMOTIONAL SUMMARY</div>
+            <p class="summary-text">{{ result.summary }}</p>
+        </div>
+    </section>
+
+    <section class="two-col">
+        <div class="content-card">
+            <div class="card-label">POSSIBLE FACTORS</div>
+            <ul class="clean-list">
+                {% for factor in result.factors %}<li>{{ factor }}</li>{% endfor %}
+            </ul>
+        </div>
+        <div class="content-card">
+            <div class="card-label">THINGS YOU CAN TRY</div>
+            <ol class="suggestion-list">
+                {% for item in result.suggestions %}<li>{{ item }}</li>{% endfor %}
+            </ol>
+        </div>
+    </section>
+
+    <div class="support-note">💛 {{ result.note }}</div>
+
+    <section class="journal-preview">
+        <div class="card-label">YOUR JOURNAL</div>
+        <p>{{ result.journal_text }}</p>
+    </section>
+
+    <div class="center-actions">
+        <a href="{{ url_for('journal') }}" class="btn primary">Check in again</a>
+        <a href="{{ url_for('analytics') }}" class="btn ghost">See my analytics</a>
+    </div>
+</div>
+{% endblock %}

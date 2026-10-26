@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}DayTone AI — Understand Your Day{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <div class="eyebrow">AI-POWERED WELLNESS JOURNAL</div>
+        <h1>Understand your day.<br><span>One feeling at a time.</span></h1>
+        <p>DayTone AI helps you reflect on your mood, understand patterns in your day, and discover simple wellness steps through intelligent self-reflection.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('register') }}" class="btn primary">Create your account</a>
+            <a href="{{ url_for('login') }}" class="btn ghost">Log in</a>
+        </div>
+        <div class="mini-trust">
+            <span>🔒 Private journal</span>
+            <span>✦ AI-assisted reflection</span>
+            <span>📈 Mood history</span>
+        </div>
+    </div>
+    <div class="hero-card">
+        <div class="orb"></div>
+        <div class="floating-card top">
+            <span class="emoji">😊</span>
+            <div><strong>Today's mood</strong><small>Feeling good</small></div>
+        </div>
+        <div class="wellness-card">
+            <div class="card-label">DAYTONE INSIGHT</div>
+            <h3>A calmer evening starts with one small step.</h3>
+            <div class="progress"><span></span></div>
+            <div class="card-row"><span>Estimated stress</span><strong>4 / 10</strong></div>
+            <div class="suggestion">🌿 Try a 5-minute breathing break</div>
+        </div>
+        <div class="floating-card bottom">
+            <span class="chart-icon">↗</span>
+            <div><strong>Mood trend</strong><small>Improving this week</small></div>
+        </div>
+    </div>
+</section>
+<section class="landing-features">
+    <div><span>01</span><h3>Check in</h3><p>Choose how you feel and write about your day.</p></div>
+    <div><span>02</span><h3>Reflect with AI</h3><p>Get an estimated stress level and practical suggestions.</p></div>
+    <div><span>03</span><h3>See your patterns</h3><p>Track your mood and stress changes over time.</p></div>
+</section>
+{% endblock %}
